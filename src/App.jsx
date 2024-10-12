@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Table from "react-bootstrap/Table";
 
 import Textbox from "./components/textbox/textbox";
@@ -22,6 +22,7 @@ function App() {
     const storedCartItems = localStorage.getItem("cartItems");
     return storedCartItems ? JSON.parse(storedCartItems) : [];
   });
+  const nextContainerRef = useRef (null);
   const [txtName, setTxtName] = useState("");
   const [textPrice, setTextPrice] = useState("");
   const [textQuantity, setTextQuantity] = useState("");
@@ -54,6 +55,9 @@ function App() {
         name: txtName,
         price: parseFloat(textPrice),
         quantity: parseInt(textQuantity, 10),
+        
+        
+      
       };
 
       if (editIndex !== null) {
@@ -71,6 +75,10 @@ function App() {
       setTextQuantity("");
     } else {
       alert("Please fill in all item details.");
+
+      if (nextContainerRef.current) {
+        nextContainerRef.current.scrollIntoView({behavior: smooth});
+      }
     }
   }
 
@@ -79,6 +87,11 @@ function App() {
     if (confirmDelete) {
       const newItems = cartItems.filter((_, index) => index !== itemIndex);
       setCartItems(newItems);
+
+
+      window.scrollTo({top: 0, behavior: "smooth"});
+
+      
     }
   }
 
@@ -88,6 +101,9 @@ function App() {
     setTextPrice(item.price.toString());
     setTextQuantity(item.quantity.toString());
     setEditIndex(itemIndex);
+
+
+    window.scrollTo({top: 0, behavior: "smooth"});
   }
 
   function clearCart() {
@@ -102,8 +118,9 @@ function App() {
 
   const shippingFees = {
     Tubigon: 100,
-    Calape: 80,
-    Catigbian: 150,
+    Calape: 150,
+    Loon: 200,
+    Tagbilaran: 250,
   };
 
   const subtotal = cartItems.reduce(
@@ -141,20 +158,23 @@ function App() {
             containerClass="p-3"
             onTextChange={handleTextChange}
           />
-          <div className="d-flex justify-content-center py-2">
+          <div className="d-flex justify-content-center py-2"
+            ref={nextContainerRef}
+            >
             <CustomButton
               label={editIndex !== null ? "Update Item" : "Add to Cart"}
               onClick={addToCart}
-              variant="primary"
+              variant="dark"
+              
             />
           </div>
         </div>
 
         {cartItems.length > 0 && (
-          <div className="item-container my-5">
+          <div className="item-container my-5 ">
             <h3 className="text-center py-3">𝑪𝑨𝑹𝑻 𝑰𝑻𝑬𝑴𝑺</h3>
             <div className="d-flex my-3">
-              <CustomButton label="Clear Cart" onClick={clearCart} variant="info" />
+              <CustomButton label="Clear Cart" onClick={clearCart} variant="dark" />
             </div>
 
             <Table striped bordered>
@@ -179,13 +199,13 @@ function App() {
                     <td className="text-center" width={240}>
                       <CustomButton
                         label="Edit"
-                        variant="success"
+                        variant="light"
                         innerClass="m-1"
                         onClick={() => editItem(index)}
                       />
                       <CustomButton
                         label="Delete"
-                        variant="danger"
+                        variant="light"
                         innerClass="m-1"
                         onClick={() => deleteItem(index)}
                       />
@@ -198,7 +218,7 @@ function App() {
             <Dropdown
               id="drpTown"
               label="Town"
-              options={["Tubigon", "Calape", "Catigbian"]}
+              options={["Tubigon", "Calape", "Loon", "Tagbilaran"]}
               value={selectedTown}
               containerClass="w-25 p-2"
               onSelectChange={handleTownChange}
@@ -215,7 +235,7 @@ function App() {
             <div className="py-3">
               <p>Subtotal: {formatCurrency(subtotal)}</p>
               <p>Shipping Fee: {formatCurrency(shippingFee)}</p>
-              <p>Grand Total: {formatCurrency(grandTotal)}</p>
+              <p className="atay">Grand Total: {formatCurrency(grandTotal)}</p>
             </div>
 
             <div className="d-flex justify-content-end my-3"></div>
